@@ -14,9 +14,11 @@
   },
   "license": "MIT",
   "scripts": {
-    "dev": "vite",
+    "start": "vite build && cross-env PORT=3000 && node app/app.js",
+    "serve": "vite build && cross-env PORT=3000 DEBUG=koa-views && nodemon app/app.js",
+    "dev": "vite --mode development",
     "build": "vite build",
-    "preview": "vite preview --port 4173",
+    "preview": "vite preview --port 3000",
     "prepare": "husky install",
     "lint": "eslint src",
     "lint-staged": "lint-staged",
