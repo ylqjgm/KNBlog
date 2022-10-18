@@ -1,0 +1,71 @@
+{
+  "src/assets/logo.svg": {
+    "file": "assets/svg/logo-da9b9095.svg",
+    "src": "src/assets/logo.svg"
+  },
+  "index.html": {
+    "file": "assets/js/index-13ecd3f2.js",
+    "src": "index.html",
+    "isEntry": true,
+    "imports": [
+      "_@vue-61332dff.js",
+      "_pinia-b6d5e38e.js",
+      "_vue-router-55c61177.js",
+      "_vue-demi-14c51326.js"
+    ],
+    "dynamicImports": [
+      "src/views/AboutView.vue"
+    ],
+    "css": [
+      "assets/css/index-4dd4af7a.css"
+    ],
+    "assets": [
+      "assets/svg/logo-da9b9095.svg"
+    ]
+  },
+  "_@vue-61332dff.js": {
+    "file": "assets/js/@vue-61332dff.js"
+  },
+  "_pinia-b6d5e38e.js": {
+    "file": "assets/js/pinia-b6d5e38e.js",
+    "imports": [
+      "_vue-demi-14c51326.js",
+      "_@vue-61332dff.js"
+    ]
+  },
+  "_vue-66e00f21.js": {
+    "file": "assets/js/vue-66e00f21.js"
+  },
+  "_vue-demi-14c51326.js": {
+    "file": "assets/js/vue-demi-14c51326.js"
+  },
+  "_vue-router-55c61177.js": {
+    "file": "assets/js/vue-router-55c61177.js",
+    "imports": [
+      "_@vue-61332dff.js"
+    ]
+  },
+  "src/views/AboutView.vue": {
+    "file": "assets/js/AboutView-3fdbe2cf.js",
+    "src": "src/views/AboutView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "index.html",
+      "_@vue-61332dff.js",
+      "_pinia-b6d5e38e.js",
+      "_vue-demi-14c51326.js",
+      "_vue-router-55c61177.js"
+    ],
+    "css": [
+      "assets/css/AboutView-4d995ba2.css"
+    ]
+  },
+  "src/views/AboutView.css": {
+    "file": "assets/css/AboutView-4d995ba2.css",
+    "src": "src/views/AboutView.css"
+  },
+  "index.css": {
+    "file": "assets/css/index-4dd4af7a.css",
+    "src": "index.css"
+  }
+}
