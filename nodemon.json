@@ -1,0 +1,10 @@
+{
+  "restartable": "KNBlog",
+  "ignore": [
+    "src",
+    "app/web"
+  ],
+  "watch": [
+    "app"
+  ]
+}
