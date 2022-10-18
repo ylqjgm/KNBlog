@@ -12,8 +12,16 @@ const User = require('./user')
 db.sync({ force: true })
 
 // 定义文章与元数据多对多关联
-Article.belongsToMany(Meta, { through: Relationship, uniqueKey: 'article_id' })
-Meta.belongsToMany(Article, { through: Relationship, uniqueKey: 'meta_id' })
+Article.belongsToMany(Meta, {
+  through: Relationship,
+  uniqueKey: 'article_id',
+  foreignKey: 'article_id'
+})
+Meta.belongsToMany(Article, {
+  through: Relationship,
+  uniqueKey: 'meta_id',
+  foreignKey: 'meta_id'
+})
 
 // 定义用户与文章一对多关联
 User.hasMany(Article)
