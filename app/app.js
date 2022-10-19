@@ -99,7 +99,7 @@ app.use(async (ctx, next) => {
 })
 
 // 路由处理，设置为 /api 前缀
-app.use(router.prefix('/api').routes())
+app.use(router.prefix(config.api.base).routes())
 // 如果使用了不支持的方法访问响应头会返回 405 Method Not Allowed 和 Allow 字段
 app.use(router.allowedMethods())
 
