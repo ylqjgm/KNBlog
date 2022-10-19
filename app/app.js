@@ -21,13 +21,15 @@ const conditional = require('koa-conditional-get')
 const etag = require('koa-etag')
 // 加载压缩库
 const compress = require('koa-compress')
+// 加载配置数据
+const { config } = require('./config/app')
+// 加载token处理库
+const { verifyToken } = require('./util/token')
 // 加载数据库模型
 require('./model')
 
 // 初始化koa
 const app = new koa()
-// 获取监听端口
-const PORT = process.env.PORT || 3000
 
 // 收到请求和发送相应时打印日志
 app.use(logger())
@@ -37,8 +39,6 @@ app.use(helmet())
 app.use(body({ enableTypes: ['json', 'from', 'text'] }))
 // 跨域处理
 app.use(cors())
-// 开启jwt支持
-//app.use(jwt({ secret: 'shared-secret', debug: true }))
 // 缓存处理
 app.use(conditional())
 app.use(etag())
@@ -50,8 +50,8 @@ app.use(compress({ threshold: 2048, br: false }))
 app.use(serve(__dirname + '/web/'))
 
 // 401错误
-app.use(async function (ctx, next) {
-  return next().catch(err => {
+app.use(async (ctx, next) => {
+  await next().catch(err => {
     if (err.status === 401) {
       ctx.status = 401
       let errMessage = err.originalError
@@ -67,10 +67,24 @@ app.use(async function (ctx, next) {
   })
 })
 
-// 遇到路径内含有 /public/ 的则跳过验证
+// 自动获取客户端提交的token，验证后存入ctx.state中
+app.use(async (ctx, next) => {
+  let token = ctx.headers.authorization
+  if (token === undefined) await next()
+  else {
+    verifyToken(token).then(data => {
+      ctx.state = {
+        token: data
+      }
+    })
+    await next()
+  }
+})
+
+// 开启jwt，遇到路径内含有 /public/ 的则跳过验证
 app.use(
   jwt({
-    secret: 'knblog'
+    secret: config.jwt.secret
   }).unless({
     path: [/\/public/, '/']
   })
@@ -90,4 +104,6 @@ app.use(router.prefix('/api').routes())
 app.use(router.allowedMethods())
 
 // 启动服务器监听
-app.listen(PORT)
+app.listen(config.server.port, () => {
+  console.log('Server listening...')
+})
