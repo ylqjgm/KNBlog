@@ -1,27 +1,93 @@
-// 加载所需库
+// 加载koa库
 const koa = require('koa')
-const json = require('koa-json')
-const web = require('koa-static')
+// 加载日志库
 const logger = require('koa-logger')
-const bodyparser = require('koa-bodyparser')
-const cors = require('@koa/cors')
-const { resolve } = require('path')
+// 加载安全库
+const helmet = require('koa-helmet')
+// 加载路由
 const router = require('./router')
+// 加载跨域处理库
+const cors = require('@koa/cors')
+// 加载jwt处理库
+const jwt = require('koa-jwt')
+// 加载请求处理库
+const body = require('koa-bodyparser')
+// 加载json库
+const json = require('koa-json')
+// 加载静态处理库
+const serve = require('koa-static')
+// 加载缓存库
+const conditional = require('koa-conditional-get')
+const etag = require('koa-etag')
+// 加载压缩库
+const compress = require('koa-compress')
+// 加载数据库模型
 require('./model')
 
+// 初始化koa
 const app = new koa()
+// 获取监听端口
 const PORT = process.env.PORT || 3000
 
-app.use(bodyparser({ enableTypes: ['json', 'from', 'text'] }))
-app.use(json())
+// 收到请求和发送相应时打印日志
 app.use(logger())
-app.use(web(resolve(__dirname, './web')))
+// 处理一些安全性相关的HTTP头
+app.use(helmet())
+// 请求处理
+app.use(body({ enableTypes: ['json', 'from', 'text'] }))
+// 跨域处理
 app.use(cors())
-app.use(router.prefix('/api').routes())
-app.use(router.allowedMethods())
+// 开启jwt支持
+//app.use(jwt({ secret: 'shared-secret', debug: true }))
+// 缓存处理
+app.use(conditional())
+app.use(etag())
+// json支持
+app.use(json())
+// 数据压缩
+app.use(compress({ threshold: 2048, br: false }))
+// 静态文件，vue编译文件
+app.use(serve(__dirname + '/web/'))
 
-app.on('error', (err, ctx) => {
-  console.error('server error', err, ctx)
+// 401错误
+app.use(async function (ctx, next) {
+  return next().catch(err => {
+    if (err.status === 401) {
+      ctx.status = 401
+      let errMessage = err.originalError
+        ? err.originalError.message
+        : err.message
+      ctx.body = {
+        error: errMessage
+      }
+      ctx.set('X-Status-Reason', errMessage)
+    } else {
+      throw err
+    }
+  })
 })
 
+// 遇到路径内含有 /public/ 的则跳过验证
+app.use(
+  jwt({
+    secret: 'knblog'
+  }).unless({
+    path: [/\/public/, '/']
+  })
+)
+
+// 添加处理时间头部信息
+app.use(async (ctx, next) => {
+  const start = Date.now()
+  await next()
+  const ms = Date.now() - start
+  ctx.set('X-Response-Time', `${ms}ms`)
+})
+
+// 路由处理，设置为 /api 前缀
+app.use(router.prefix('/api').routes())
+// 如果使用了不支持的方法访问响应头会返回 405 Method Not Allowed 和 Allow 字段
+app.use(router.allowedMethods())
+
+// 启动服务器监听
 app.listen(PORT)
